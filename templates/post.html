@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+{% block head %}
+  {{ super() }}
+{% endblock%}
+{% block title %}{{ post.title }}{% endblock %}
+
+
+{% block content %}
+  {% include "nav.html" %}
+
+  <!-- Page Header -->
+  <header class="masthead" style="background-image: url('{{ post.img_url }}')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h1>{{ post.title }}</h1>
+            <h2 class="subheading">{{ post.subtitle }}</h2>
+            <span class="meta">Posted by
+                <a href="#">{{ post.author.name }}</a>
+                on {{ post.date }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+    <!-- Post Content -->
+    <article>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <p>
+              {{ content }}
+            </p>
+            <hr>
+            {% if user_id == 1 %}
+              <div class="clearfix">
+                <a class="btn btn-primary float-right" href="{{ url_for('edit_post', post_id=post.id) }}">Edit Post</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </article>
+    <hr>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          {% with messages = get_flashed_messages() %}
+            {% if messages %}
+              <div class="alert alert-danger text-center" role="alert">
+                {{ messages[0] }}
+                <a href="{{ url_for('user_login') }}">Login</a>
+              </div>
+            {% endif %}
+          {% endwith %}
+          
+            <!-- This is where the form will go -->
+            <!-- #Load ckeditor -->
+          {{ ckeditor.load() }}
+          
+          <!-- #Configure the ckeditor to tell it which field in WTForm will need to be a CKEditor. -->
+          {{ ckeditor.config(name='comment') }}
+          
+          <!-- #Add WTF quick form -->
+          {{ render_form(form, novalidate=true) }}
+
+          <hr>
+          <!--<div class="col-lg-8 col-md-10 mx-auto comment">
+            <ul class="commentList">
+              {% for comment in post.comments: %}
+                <li>
+                    <div class="commenterImage">
+                        <img src="https://pbs.twimg.com/profile_images/744849215675838464/IH0FNIXk.jpg"/>
+                    </div>
+                    <div class="commentText">
+                      {{comment.text|safe}}
+                      <span class="date sub-text">- {{comment.comment_author.name}}</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+          </div>-->
+
+          <div class="container">
+            {% for comment in post.comments: %}
+            <div class="row">
+              <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="card mb-3">
+                  <div class="card-body d-flex align-items-center">
+                    <img src="{{ 'zzz.sochi@gmail.com' | gravatar }}" class="rounded-circle me-3" alt="User Profile Image" width="40" height="40"></img>
+                    <div>
+                      <h5 class="card-title">{{ comment.text|safe }}</h5>
+                      <p class="card-text">
+                          <a href="#">{{ comment.comment_author.name }}</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+        </div>
+      </div>
+    </div>
+  {% include "footer.html" %}
+{% endblock %}
